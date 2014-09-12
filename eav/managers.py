@@ -163,12 +163,16 @@ class EntityManager(models.Manager):
 
         #attributes = config_cls.get_attributes()
         prefix = '%s__' % config_cls.eav_attr
+        attributes_name = [x.name for x in config_cls.get_attributes()]
 
         new_kwargs = {}
         eav_kwargs = {}
         for key, value in kwargs.iteritems():
             if key.startswith(prefix):
-                eav_kwargs.update({key[len(prefix):]: value})
+                if key[len(prefix):] in attributes_name:
+                    eav_kwargs.update({key[len(prefix):]: value})
+                else:
+                    raise AttributeError("Attribute %s not in model attributes"%(key[len(prefix):],))
             else:
                 new_kwargs.update({key: value})
 
